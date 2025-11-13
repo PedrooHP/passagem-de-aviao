@@ -6,6 +6,31 @@
 
 using namespace std;
 
+//Função para buscar e salvar base
+
+// Salva todo o vetor 'voo' no arquivo (formato simplificado: um campo por linha)
+void salvarBase(string nomeBaseDados, Passagem voo[], int qtdAssentos) {
+    ofstream escritorArquivo;
+    escritorArquivo.open(nomeBaseDados); 
+
+    if (!escritorArquivo.is_open()) {
+        cout << "\nERRO: Nao foi possivel abrir o arquivo para escrita.\n";
+        return;
+    }
+
+    for (int i = 0; i < qtdAssentos; i++) {
+        // Salva cada campo com uma quebra de linha
+        escritorArquivo << voo[i].dataCompra << "\n"
+                       << voo[i].dadosVoo << "\n"
+                       << voo[i].nomePassageiro << "\n"
+                       << voo[i].companhiaAerea << "\n"
+                       << voo[i].numeroAssento << "\n"
+                       << voo[i].valor << "\n";
+    }
+
+    escritorArquivo.close();
+}
+
 int buscarAssento(Passagem voo[], int qtdAssentos, int numeroAssento) {
     for (int i = 0; i < qtdAssentos; i++) {
         if (voo[i].numeroAssento == numeroAssento) {
@@ -15,7 +40,20 @@ int buscarAssento(Passagem voo[], int qtdAssentos, int numeroAssento) {
     return -1; // Não encontrado
 }
 
-// 2. FUNÇÕES DO MENU DA GARAGEM
+//FUNÇÕES PARA VALIDAÇÃO:
+
+// Função de validação de data/hora
+bool validarFormatoDataHora(string dataHora) {
+    // Validação simplificada: apenas verifica se tem 10 caracteres (AAAA-MM-DD)
+    if (dataHora.size() != 10 || dataHora[4] != '-' || dataHora[7] != '-') {
+        return false;
+    }
+    for (int i = 0; i < 10; i++) {
+        if (i == 4 || i == 7) continue;
+        if (!isdigit(dataHora[i])) return false;
+    }
+    return true;
+}
 
 // Opção 1: Entrada de Passagem (Inserir no vetor e no arquivo)
 
@@ -27,24 +65,109 @@ void entradaPassagem(string nomeBaseDados, Passagem voo[], int tamanho, int *qtd
 
     Passagem novaPassagem;
     int numeroAssento;
-    string dataEntrada;
+    string dataCompra;
 
-    cout << "\n--- Entrada de Veiculo ---\n";
+    cout << "\n--- Cadastro de passagem ---\n";
 
-    // 1. VALIDAÇÃO DO ASSENTO (Placa com 7 caracteres e não duplicada)
+    // 1. Validação do assento (1 a 40 e não duplicado)
     do {
         cout << "Digite o numero do assento (1 à 40): ";
-        cin >> numeroAssento;
+        if (!(cin >> numeroAssento) || numeroAssento < 1 || numeroAssento > tamanho) {
+            cout << "ERRO: Numero de assento invalido. Tente novamente.\n";
+            cin.clear();
+            cin.ignore(10000, '\n');
+            continue;
+        }
 
-        if (numeroAssento <= 40) {
-            // Verifica se o numero do assento já está ocupado (em memória)
-            if (buscarAssento(voo, *qtdAssentos, numeroAssento) != -1) {
-                cout << "ERRO: o Assento já está ocupado. Tente novamente.\n";
-            } else {
-                novaPassagem.numeroAssento = numeroAssento;
-                break; // Sai do loop do assento
-            }
+        if (buscarAssento(voo, *qtdAssentos, numeroAssento) != -1) {
+            cout << "ERRO: O Assento " << numeroAssento << " ja esta ocupado. Tente outro.\n";
         } else {
-            cout << "ERRO: o número do assento é maior que o número suportado. Tente novamente.\n";
+            novaPassagem.numeroAssento = numeroAssento;
+            break;
         }
     } while (true);
+
+    //Limpar o buffer para ler outra string com espaços
+    cin.ignore(1000, '\n');
+
+    //Coleta dos outros dados
+
+    cout << "Digite o Nome completo do passageiro: ";
+    getline(cin, novaPassagem.nomePassageiro);
+
+    cout << "Companhia Aerea: ";
+    getline(cin, novaPassagem.companhiaAerea);
+
+    cout << "Dados do voo (origem e destino)";
+    getline(cin, novaPassagem.dadosVoo);
+
+    //Validação da data de compra (AAAA-MM-DD)
+
+    do{
+        cout << "Data de compra (AAAA-MM-DD): ";
+        getline(cin, dataCompra);
+
+        if (validarFormatoDataHora (dataCompra)){
+            novaPassagem.dataCompra = dataCompra;
+            break;
+        }else{
+            cout << "Formato invalido de data. Use AAAA-MM-DD e apenas numeros\n";
+        }
+    }while (true);
+
+    //4 valor
+
+    cout << "Digite o valor da passagem: ";
+    cin >> novaPassagem.valor;
+
+    //5 salva o vetor no arquivo
+
+    voo[*qtdAssentos] = novaPassagem;
+    *qtdAssentos += 1;
+
+    salvarBase(nomeBaseDados, voo, *qtdAssentos);
+    cout << "\n Passagem para" << novaPassagem.nomePassageiro << " no assento " << novaPassagem.numeroAssento << " Registrada com sucesso\n";
+}
+
+//OPÇÃO 2: LISTAR TODOS OS ASSENTOS
+
+void listarAssentos(Passagem voo[], int qtdAssentos, int tamanho){
+    cout << "\n--- Listagem de Assentos ---\n";
+    if (qtdAssentos == 0){
+        cout << "Nenhum assento vendido.\n";
+        return;
+    }
+    for (int i = 0; i < qtdAssentos; i++){
+        cout << "Assento: " << voo[i].numeroAssento
+             << " | Cliente: " << voo[i].nomePassageiro
+             << " | voo: " << voo[i].dadosVoo << endl;
+    }
+    cout << "---------------\n";
+    cout << "Assentos ocupados: " << qtdAssentos << " de " << tamanho << endl;
+}
+
+// OPÇÃO 3: CANCELAMENTO
+
+void cancelarPassagem(string nomeBaseDados, Passagem voo[], int *qtdAssentos){
+    int assentoCancelar;
+    
+    cout << "\n--- CANCELAMENTO DE PASSAGEM ---\n";
+    cout << "Digite o numero do assento a ser cancelado: ";
+    cin >> assentoCancelar;
+
+    int indice = buscarAssento(voo, *qtdAssentos, assentoCancelar);
+
+    if (indice == -1){
+        cout << "O assento " << assentoCancelar << " não está ocupado.\n";
+        return;
+    }
+
+    //Move o ultimo assento ocupado para o lugar do assento cancelado
+    voo[indice] = voo[*qtdAssentos];
+
+    *qtdAssentos -= 1; //Reduz o total de assentos ocupados
+
+    salvarBase(nomeBaseDados, voo, *qtdAssentos);
+
+    cout << "Assento " << assentoCancelar << " cancelado com sucesso e liberado\n";
+}

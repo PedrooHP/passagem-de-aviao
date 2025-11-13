@@ -3,11 +3,8 @@
     typedef struct {
         string dataCompra;
         string dadosVoo;
-        string dadosPassageiro;
-        int numeroAssento; //1 a 40
-        float valor;
         string nomePassageiro;
         string companhiaAerea;
+        int numeroAssento; //1 a 40
+        float valor;
     } Passagem;
- 
-    Passagem vetor[TAM];
