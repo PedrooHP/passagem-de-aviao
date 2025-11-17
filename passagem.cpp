@@ -25,7 +25,7 @@ using namespace std;
 void menuPassagem(string baseDados, Passagem voo[], int tamanho, int *qtdAssentos) {
     int opcao;
     
-    // As chamadas para as opções 1 e 3 estão criadas no arquivo meusMetodos.h
+    // As chamadas para as opções 1 e 4 estão criadas no arquivo meusMetodos.h
     do {
         //system("cls"); // Limpa a tela (infelizmente não funciona)
         cout << "\n================================\n";
@@ -88,7 +88,7 @@ int carregarBasePassagens(string nomeBaseDados, Passagem voo[], int tamanho) {
     int qtdAssentos = 0;
     string campo;
     
-    // O loop tenta ler todos os 6 campos de um aluno de uma vez.
+    // O loop tenta ler todos os 4 campos de uma vez.
     // Se falhar em qualquer um, significa que o arquivo acabou.
     while (qtdAssentos < tamanho && 
            getline(procuradorArquivo, voo[qtdAssentos].dataCompra) &&

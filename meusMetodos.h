@@ -78,7 +78,7 @@ void entradaPassagem(string nomeBaseDados, Passagem voo[], int tamanho, int *qtd
 
     cout << "\n--- Cadastro de passagem ---\n";
 
-    // 1. Validação do assento (1 a 40 e não duplicado)
+    //  Validação do assento (1 a 40 e não duplicado)
     do {
         cout << "Digite o numero do assento (1 à 40): ";
         if (!(cin >> numeroAssento) || numeroAssento < 1 || numeroAssento > tamanho) {
@@ -129,7 +129,7 @@ void entradaPassagem(string nomeBaseDados, Passagem voo[], int tamanho, int *qtd
     cout << "Digite o valor da passagem: ";
     cin >> novaPassagem.valor;
 
-    //5 salva o vetor no arquivo
+    // salva o vetor no arquivo
 
     voo[*qtdAssentos] = novaPassagem;
     *qtdAssentos += 1;
