@@ -34,7 +34,8 @@ void menuPassagem(string baseDados, Passagem voo[], int tamanho, int *qtdAssento
         cout << "1) Cadastrar passagem\n";
         cout << "2) Listagem de assentos\n";
         cout << "3) Cancelamento\n";
-        cout << "4) sair\n";
+        cout << "4) Pesquisar\n";
+        cout << "5) sair\n";
         cout << "Opcao: ";
         cin >> opcao;
 
@@ -50,6 +51,9 @@ void menuPassagem(string baseDados, Passagem voo[], int tamanho, int *qtdAssento
             cancelarPassagem(baseDados, voo, qtdAssentos);
             break;
         case 4:
+            pesquisarPassagem(voo, *qtdAssentos);
+            break;
+        case 5:
             cout << "Programa encerrado.\n";
             break;
 
@@ -65,7 +69,7 @@ void menuPassagem(string baseDados, Passagem voo[], int tamanho, int *qtdAssento
             cin.get();
         }
 
-    } while (opcao != 4);
+    } while (opcao != 5);
 }
 
 //FUNÇÃO PARA CARREGAR NA BASE DE ARQUIVOS

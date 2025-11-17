@@ -1,5 +1,7 @@
-#define TAM 40
- 
+    #include <string>
+    
+    #define TAM 40
+
     typedef struct {
         string dataCompra;
         string dadosVoo;

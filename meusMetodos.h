@@ -55,6 +55,15 @@ bool validarFormatoDataHora(string dataHora) {
     return true;
 }
 
+// Função auxiliar para colocar todos os nomes em maiusculos
+
+string paraMaiusculo(string str) {
+    for (char &c : str) {
+        c = toupper(c);
+    }
+    return str;
+}
+
 // Opção 1: Entrada de Passagem (Inserir no vetor e no arquivo)
 
 void entradaPassagem(string nomeBaseDados, Passagem voo[], int tamanho, int *qtdAssentos) {
@@ -170,4 +179,56 @@ void cancelarPassagem(string nomeBaseDados, Passagem voo[], int *qtdAssentos){
     salvarBase(nomeBaseDados, voo, *qtdAssentos);
 
     cout << "Assento " << assentoCancelar << " cancelado com sucesso e liberado\n";
+}
+
+//OPÇÃO 4: PESQUISAR
+
+void pesquisarPassagem(Passagem voo[], int qtdAssentos){
+    string termoBusca;
+    int assentoBusca = -1;
+
+    cout << "\n ---PESQUISAR PASSAGEM---\n";
+    cout << "Digite o nome do cliente ou numero do assento: ";
+    cin.ignore(1000, '\n');
+    getline (cin, termoBusca);
+
+    bool encontrado = false;
+
+    // Converte o termoBusca para maiusculo
+    string termoBuscaUpper = paraMaiusculo(termoBusca);
+
+    // Caso tenha digitado para pesquisar pelo numero do assento
+    try {
+        assentoBusca = stoi(termoBusca);
+    } catch (...) {
+        // Se caso for digitado um nome, o assentoBusca fica com -1
+        assentoBusca = -1;
+    }
+
+    cout << "\n Resultado da pesquisa: \n";
+
+    for (int i = 0; i < qtdAssentos; i++){
+        // Converte o nome do passageiro para maiusculo
+        string nomePassageiroUpper = paraMaiusculo(voo[i].nomePassageiro);
+
+        // Busca pelo nome maiusculo
+        bool buscaPorNome = (nomePassageiroUpper.find(termoBuscaUpper) != string::npos);
+
+        // Busca por assento
+        bool buscaPorAssento = (assentoBusca != -1 && voo[i].numeroAssento == assentoBusca);
+
+        if (buscaPorNome || buscaPorAssento){
+            cout << "========================\n";
+            cout << "Assento: " << voo[i].numeroAssento
+                 << " | Cliente: " << voo[i].nomePassageiro
+                 << " | Voo: " << voo[i].dadosVoo
+                 << " | Data da compra: " << voo[i].dataCompra
+                 << " | Valor: R$ " << voo[i].valor << endl;
+            encontrado = true;
+        }
+    }
+
+    if (!encontrado){
+        cout << "Nenhuma passagem encontrada '" << termoBusca << "'\n";
+    }
 }
